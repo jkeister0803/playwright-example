@@ -16,3 +16,12 @@ test('can access todos list', async ({ page }) => {
     await expect(page).toHaveURL('https://eviltester.github.io/simpletodolist/todo.html#/&Tests');
     await expect(page.getByRole('heading', { name: 'TODOs : Tests'})).toBeVisible();
 });
+
+// can add todos to list
+// can complete todo on list
+// can view completed todos
+// can view open todos
+// can delete todos from list
+// can clear completed todos
+// can delete open todos
+// can delete todo list
