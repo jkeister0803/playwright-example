@@ -10,7 +10,7 @@ export class HomePage extends BasePage {
     readonly newListTitle = (listTitle: string) => this.page.getByText(listTitle);
     readonly listDeleteButton = (listDescription: string) => this.page.locator('div').filter({ hasText: listDescription }).getByRole('button');
 
-    constructor (page: Page) {
+    constructor (public readonly page: Page) {
         super(page);
     }
 

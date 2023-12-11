@@ -13,7 +13,7 @@ export class ListPage extends BasePage {
     readonly taskDeleteButton = (taskName: string) => this.page.locator('div').filter({ hasText: taskName }).getByRole('button');
     readonly clearCompletedButton = this.page.getByRole('button', { name: 'Clear completed' });
 
-    constructor (page: Page) {
+    constructor (public readonly page: Page) {
         super(page);
     }
 

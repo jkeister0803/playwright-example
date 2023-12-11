@@ -6,7 +6,7 @@ export class LoginPage {
     readonly passwordField = this.page.getByPlaceholder('Enter Password');
     readonly loginButton = this.page.getByRole('button', { name: 'Login' });
 
-    constructor (private readonly page: Page) {}
+    constructor (public readonly page: Page) {}
 
     async login(username: any, password: any) {
         await this.userNameField.fill(username);
