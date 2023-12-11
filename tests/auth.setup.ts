@@ -6,8 +6,8 @@ const URL = 'https://eviltester.github.io/simpletodolist/todolists.html';
 const adminURL = 'https://eviltester.github.io/simpletodolist/adminview.html';
 const authFile = 'playwright/.auth/user.json';
 const loginLinkName = 'Admin Login';
-const username = 'Admin';
-const password = 'AdminPass';
+const username = process.env.USERNAME;
+const password = process.env.PASSWORD;
 let homePage: HomePage;
 let loginPage: LoginPage;
 

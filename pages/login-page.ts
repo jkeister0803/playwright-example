@@ -8,7 +8,7 @@ export class LoginPage {
 
     constructor (private readonly page: Page) {}
 
-    async login(username: string, password: string) {
+    async login(username: any, password: any) {
         await this.userNameField.fill(username);
         await this.passwordField.fill(password);
         await this.loginButton.click();
