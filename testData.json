@@ -1,0 +1,13 @@
+{
+    "URL": "https://eviltester.github.io/simpletodolist/todolists.html",
+    "adminURL": "https://eviltester.github.io/simpletodolist/adminview.html",
+    "authFile": "playwright/.auth/user.json",
+    "loginLinkName": "Admin Login",
+    "firstTask": "can log in",
+    "secondTask": "can create list",
+    "thirdTask": "can add tasks to list",
+    "listHeading": "TODOS : Tests",
+    "listTitle": "Tests",
+    "listDescription": "[use] Tests",
+    "taskStatuses": ["All", "Active", "Completed"]
+}
