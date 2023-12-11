@@ -1,6 +1,7 @@
-import { type Locator, type Page, expect } from '@playwright/test'
+import { type Page, expect } from '@playwright/test'
+import { BasePage } from './base-page'
 
-export class HomePage {
+export class HomePage extends BasePage {
     // Variables
     readonly newListPlaceholderText = 'Enter new todo list name here';
     readonly navLink = (pageName: string) => this.page.getByRole('link', { name: pageName });
@@ -10,7 +11,9 @@ export class HomePage {
     readonly listDeleteButton = (listDescription: string) => this.page.locator('div').filter({ hasText: listDescription }).getByRole('button');
 
     // Constructor
-    constructor (private readonly page: Page) {}
+    constructor (page: Page) {
+        super(page);
+    }
 
     // Action Methods
     async goToPage(pageName:string) {
