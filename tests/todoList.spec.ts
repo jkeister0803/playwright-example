@@ -19,10 +19,7 @@ test.beforeEach(async ({ page }) => {
     listPage = new ListPage(page);
 });
 
-// --------------------------------------------------------------------------------
 // Tests
-// --------------------------------------------------------------------------------
-
 test.describe('Todo List Website', () => {
     test('can create a todo list', async () => {
         await homePage.createNewList(listTitle);
@@ -32,7 +29,6 @@ test.describe('Todo List Website', () => {
     test('can access todo list', async () => {
         await homePage.createNewList(listTitle);
         await homePage.openTodoList(listDescription);
-        // ASSERTION(S):
         await listPage.assertUrl(listTitle);
         await listPage.assertIsVisible(listPage.pageHeading(listHeading), true);
     });
@@ -42,7 +38,6 @@ test.describe('Todo List Website', () => {
         await homePage.createNewList(listTitle);
         await homePage.openTodoList(listDescription);
         await listPage.addTasksToList(tasks);
-        // ASSERTION(S):
         await listPage.assertIsVisible(listPage.taskDescription(firstTask), true);
         await listPage.assertIsVisible(listPage.taskDescription(secondTask), true);
         await listPage.assertIsVisible(listPage.taskDescription(thirdTask), true);
@@ -55,7 +50,6 @@ test.describe('Todo List Website', () => {
         await listPage.addTasksToList(tasks);
         await listPage.toggleTaskCompletion(firstTask, true);
         await listPage.toggleTaskCompletion(thirdTask, true);
-        // ASSERTION(S):
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(firstTask), true);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(secondTask), false);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(thirdTask), true);
@@ -79,15 +73,12 @@ test.describe('Todo List Website', () => {
         await listPage.addTasksToList(tasks);
         await listPage.toggleTaskCompletion(firstTask, true);
         await listPage.toggleTaskCompletion(thirdTask, true);
-
         await listPage.filterTasksOnList(taskStatuses[1]);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(secondTask), false);
         await listPage.assertIsVisible(listPage.taskDescription(secondTask), true);
-
         await listPage.filterTasksOnList(taskStatuses[2]);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(firstTask), true);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(thirdTask), true);
-
         await listPage.filterTasksOnList(taskStatuses[0]);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(firstTask), true);
         await listPage.assertTaskIsComplete(listPage.taskCheckbox(secondTask), false);
@@ -99,7 +90,6 @@ test.describe('Todo List Website', () => {
         await homePage.createNewList(listTitle);
         await homePage.openTodoList(listDescription);
         await listPage.addTasksToList(tasks);
-
         await listPage.deleteTask(thirdTask);
         await listPage.deleteTask(secondTask);
         await listPage.deleteTask(firstTask);
@@ -115,7 +105,6 @@ test.describe('Todo List Website', () => {
         await listPage.addTasksToList(tasks);
         await listPage.toggleTaskCompletion(firstTask, true);
         await listPage.toggleTaskCompletion(thirdTask, true);
-
         await listPage.clearCompletedTasks();
         await listPage.assertIsVisible(listPage.taskDescription(firstTask), false);
         await listPage.assertIsVisible(listPage.taskDescription(secondTask), true);
@@ -127,7 +116,6 @@ test.describe('Todo List Website', () => {
         await homePage.createNewList(listTitle);
         await homePage.openTodoList(listDescription);
         await listPage.addTasksToList(tasks);
-
         await homePage.goToPage('lists');
         await homePage.assertIsVisible(homePage.newListTitle(listDescription), true);
         await homePage.confirmListDeletion(listTitle); // Waits for and confirms dialog triggered by following step

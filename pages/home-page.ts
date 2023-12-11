@@ -2,7 +2,7 @@ import { type Page, expect } from '@playwright/test'
 import { BasePage } from './base-page'
 
 export class HomePage extends BasePage {
-    // Variables
+
     readonly newListPlaceholderText = 'Enter new todo list name here';
     readonly navLink = (pageName: string) => this.page.getByRole('link', { name: pageName });
     readonly newListInputField = this.page.getByPlaceholder(this.newListPlaceholderText);
@@ -10,7 +10,6 @@ export class HomePage extends BasePage {
     readonly newListTitle = (listTitle: string) => this.page.getByText(listTitle);
     readonly listDeleteButton = (listDescription: string) => this.page.locator('div').filter({ hasText: listDescription }).getByRole('button');
 
-    // Constructor
     constructor (page: Page) {
         super(page);
     }

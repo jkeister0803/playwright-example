@@ -2,7 +2,7 @@ import { type Page, expect } from '@playwright/test'
 import { BasePage } from './base-page'
 
 export class ListPage extends BasePage {
-    // Variables
+    
     readonly baseUrl = 'https://eviltester.github.io/simpletodolist/todo.html#/&';
     readonly newTaskPlaceholderText = 'Enter new todo text here';
     readonly pageHeading = (listHeading: string) => this.page.getByRole('heading', { name: listHeading });
@@ -13,7 +13,6 @@ export class ListPage extends BasePage {
     readonly taskDeleteButton = (taskName: string) => this.page.locator('div').filter({ hasText: taskName }).getByRole('button');
     readonly clearCompletedButton = this.page.getByRole('button', { name: 'Clear completed' });
 
-    // Constructor
     constructor (page: Page) {
         super(page);
     }
