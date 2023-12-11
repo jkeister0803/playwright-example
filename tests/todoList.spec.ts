@@ -1,85 +1,33 @@
 import { test, expect, type Page } from '@playwright/test';
+import { HomePage } from '../pages/home-page';
+import { ListPage } from '../pages/list-page';
 
 const URL = 'https://eviltester.github.io/simpletodolist/todolists.html';
 const firstTask = 'can log in';
 const secondTask = 'can create list';
 const thirdTask = 'can add tasks to list';
+let homePage: HomePage;
+let listPage: ListPage;
 
 test.beforeEach(async ({ page }) => {
     await page.goto(URL);
+    homePage = new HomePage(page);
+    listPage = new ListPage(page);
 });
-
-// --------------------------------------------------------------------------------
-// Helper Functions
-// --------------------------------------------------------------------------------
-
-async function createNewList(page:Page) {
-    await page.getByPlaceholder('Enter new todo list name here').fill('Tests');
-    await page.keyboard.press('Enter');
-}
-
-async function openTodoList(page:Page) {
-    await page.locator('div').filter({ hasText: '[use] Tests' }).getByRole('link').click();
-}
-
-async function createNewTask(page:Page, taskName:string) {
-    await page.getByPlaceholder('Enter new todo text here').fill(taskName);
-    await page.keyboard.press('Enter');
-}
-
-async function addTasksToList(page:Page, tasks:string[]) {
-    let num = 0;
-    let max = tasks.length;
-    for (num; num < max; num++) {
-        await createNewTask(page, tasks[num]);
-    }
-}
-
-async function toggleTaskCompletion(page:Page, taskName:string, complete:boolean) {
-    if (complete) {
-        await page.locator('div').filter({ hasText: taskName }).getByRole('checkbox').check();
-    } else {
-        await page.locator('div').filter({ hasText: taskName }).getByRole('checkbox').uncheck();
-    }
-}
-
-async function filterTasksOnList(page:Page, filterOption:string) {
-    await page.getByRole('link', { name: filterOption }).click();
-}
-
-async function deleteTask(page:Page, taskName:string) {
-    await page.locator('div').filter({ hasText: taskName }).getByRole('button').click();
-}
-
-async function clearCompletedTasks(page:Page) {
-    await page.getByRole('button', { name: 'Clear completed' }).click();
-}
-
-async function goToPage(page:Page, pageName:string) {
-    await page.getByRole('link', { name: pageName }).click();
-}
-
-async function confirmListDeletion(page:Page, listTitle:string) {
-    page.on('dialog', async (dialog) => {
-        expect(dialog.message()).toEqual('Are you sure you want to delete ' + listTitle + '?')
-        await dialog.accept()
-    })
-}
 
 // --------------------------------------------------------------------------------
 // Tests
 // --------------------------------------------------------------------------------
 
 test.describe('Todo List Website', () => {
-    test('can create a todo list', async ({ page }) => {
-        await createNewList(page);
-        // ASSERTION(S):
-        await expect(page.getByText('Tests')).toBeVisible();
+    test('can create a todo list', async () => {
+        await homePage.createNewList();
+        await homePage.assertNewListTitle();
     });
     
     test('can access todo list', async ({ page }) => {
-        await createNewList(page);
-        await openTodoList(page);
+        await homePage.createNewList();
+        await homePage.openTodoList();
         // ASSERTION(S):
         await expect(page).toHaveURL('https://eviltester.github.io/simpletodolist/todo.html#/&Tests');
         await expect(page.getByRole('heading', { name: 'TODOs : Tests'})).toBeVisible();
@@ -87,9 +35,9 @@ test.describe('Todo List Website', () => {
     
     test('can add tasks to list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
         // ASSERTION(S):
         await expect(page.getByText(firstTask)).toBeVisible();
         await expect(page.getByText(secondTask)).toBeVisible();
@@ -98,11 +46,11 @@ test.describe('Todo List Website', () => {
     
     test('can complete tasks on list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
-        await toggleTaskCompletion(page, firstTask, true);
-        await toggleTaskCompletion(page, thirdTask, true);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
+        await listPage.toggleTaskCompletion(firstTask, true);
+        await listPage.toggleTaskCompletion(thirdTask, true);
         // ASSERTION(S):
         await expect(page.locator('div').filter({ hasText: firstTask }).getByRole('checkbox')).toBeChecked();
         await expect(page.locator('div').filter({ hasText: secondTask }).getByRole('checkbox')).toBeChecked( {checked: false} );
@@ -111,32 +59,32 @@ test.describe('Todo List Website', () => {
     
     test('can uncheck completed task on list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
-        await toggleTaskCompletion(page, firstTask, true);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
+        await listPage.toggleTaskCompletion(firstTask, true);
         await expect(page.locator('div').filter({ hasText: 'can log in' }).getByRole('checkbox')).toBeChecked();
-        await toggleTaskCompletion(page, firstTask, false);
+        await listPage.toggleTaskCompletion(firstTask, false);
         await expect(page.locator('div').filter({ hasText: 'can log in' }).getByRole('checkbox')).toBeChecked( {checked: false} );
     });
     
     test('can filter tasks on list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
-        await toggleTaskCompletion(page, firstTask, true);
-        await toggleTaskCompletion(page, thirdTask, true);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
+        await listPage.toggleTaskCompletion(firstTask, true);
+        await listPage.toggleTaskCompletion(thirdTask, true);
 
-        await filterTasksOnList(page, 'Active');
+        await listPage.filterTasksOnList('Active');
         await expect(page.locator('div').getByRole('checkbox')).toBeChecked( {checked: false} );
         await expect(page.getByText('can create list')).toBeVisible();
 
-        await filterTasksOnList(page, 'Completed');
+        await listPage.filterTasksOnList('Completed');
         await expect(page.locator('div').filter({ hasText: 'can log in' }).getByRole('checkbox')).toBeChecked();
         await expect(page.locator('div').filter({ hasText: 'can add tasks to list' }).getByRole('checkbox')).toBeChecked();
 
-        await filterTasksOnList(page, 'All');
+        await listPage.filterTasksOnList('All');
         await expect(page.locator('div').filter({ hasText: 'can log in' }).getByRole('checkbox')).toBeChecked();
         await expect(page.locator('div').filter({ hasText: 'can create list' }).getByRole('checkbox')).toBeChecked( {checked: false} );
         await expect(page.locator('div').filter({ hasText: 'can add tasks to list' }).getByRole('checkbox')).toBeChecked();
@@ -144,13 +92,13 @@ test.describe('Todo List Website', () => {
     
     test('can delete tasks from list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
 
-        await deleteTask(page, thirdTask);
-        await deleteTask(page, secondTask);
-        await deleteTask(page, firstTask);
+        await listPage.deleteTask(thirdTask);
+        await listPage.deleteTask(secondTask);
+        await listPage.deleteTask(firstTask);
         await expect(page.getByText(thirdTask)).toBeVisible( {visible: false} );
         await expect(page.getByText(secondTask)).toBeVisible( {visible: false} );
         await expect(page.getByText(firstTask)).toBeVisible( {visible: false} );
@@ -158,13 +106,13 @@ test.describe('Todo List Website', () => {
     
     test('can clear completed tasks from list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
-        await toggleTaskCompletion(page, firstTask, true);
-        await toggleTaskCompletion(page, thirdTask, true);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
+        await listPage.toggleTaskCompletion(firstTask, true);
+        await listPage.toggleTaskCompletion(thirdTask, true);
 
-        await clearCompletedTasks(page);
+        await listPage.clearCompletedTasks();
         await expect(page.getByText('can log in')).toBeVisible( {visible: false} );
         await expect(page.getByText('can create list')).toBeVisible();
         await expect(page.getByText('can add tasks to list')).toBeVisible( {visible: false} );
@@ -172,14 +120,14 @@ test.describe('Todo List Website', () => {
     
     test('can delete todo list', async ({ page }) => {
         let tasks : string[] = [firstTask, secondTask, thirdTask];
-        await createNewList(page);
-        await openTodoList(page);
-        await addTasksToList(page, tasks);
+        await homePage.createNewList();
+        await homePage.openTodoList();
+        await listPage.addTasksToList(tasks);
 
-        await goToPage(page, 'lists');
+        await listPage.goToPage('lists');
         await expect(page.getByText('[use] Tests')).toBeVisible();
-        await confirmListDeletion(page, 'Tests');
-        await page.locator('div').filter({ hasText: '[use] Tests' }).getByRole('button').click();
+        await homePage.confirmListDeletion('Tests');
+        await homePage.listDeleteButton.click();
         await expect(page.getByText('[use] Tests')).toBeVisible( {visible: false} );
     });
 });
