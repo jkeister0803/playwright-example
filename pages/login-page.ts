@@ -2,23 +2,17 @@ import { type Locator, type Page } from '@playwright/test'
 
 export class LoginPage {
     // Variables
-    readonly page: Page;
-    readonly userNameField: Locator;
-    readonly passwordField: Locator;
-    readonly loginButton: Locator;
+    readonly userNameField = this.page.getByPlaceholder('Enter Username');
+    readonly passwordField = this.page.getByPlaceholder('Enter Password');
+    readonly loginButton = this.page.getByRole('button', { name: 'Login' });
 
     // Constructor
-    constructor (page: Page) {
-        this.page = page;
-        this.userNameField = page.getByPlaceholder('Enter Username');
-        this.passwordField = page.getByPlaceholder('Enter Password');
-        this.loginButton = page.getByRole('button', { name: 'Login' });
-    }
+    constructor (private readonly page: Page) {}
 
     // Methods
-    async login() {
-        await this.userNameField.fill('Admin');
-        await this.passwordField.fill('AdminPass');
+    async login(username: string, password: string) {
+        await this.userNameField.fill(username);
+        await this.passwordField.fill(password);
         await this.loginButton.click();
     }
 }

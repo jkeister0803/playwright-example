@@ -2,39 +2,28 @@ import { type Locator, type Page, expect } from '@playwright/test'
 
 export class HomePage {
     // Variables
-    readonly page:Page;
-    readonly listsLink: Locator;
-    readonly adminLoginLink: Locator;
-    readonly logoutLink: Locator;
-    readonly newListInputField: Locator;
-    readonly newListLink: Locator;
-    readonly newListTitle: Locator;
-    readonly listDeleteButton: Locator;
+    readonly newListPlaceholderText = 'Enter new todo list name here';
+    readonly navLink = (pageName: string) => this.page.getByRole('link', { name: pageName });
+    readonly newListInputField = this.page.getByPlaceholder(this.newListPlaceholderText);
+    readonly newListLink = (listDescription: string) => this.page.locator('div').filter({ hasText: listDescription }).getByRole('link');
+    readonly newListTitle = (listTitle: string) => this.page.getByText(listTitle);
+    readonly listDeleteButton = (listDescription: string) => this.page.locator('div').filter({ hasText: listDescription }).getByRole('button');
 
     // Constructor
-    constructor (page: Page) {
-        this.page = page;
-        this.listsLink = page.getByRole('link', { name: 'lists' });
-        this.adminLoginLink = page.getByRole('link', { name: 'Admin Login' });
-        this.logoutLink = page.getByRole('link', { name: 'Logout' });
-        this.newListInputField = page.getByPlaceholder('Enter new todo list name here');
-        this.newListLink = page.locator('div').filter({ hasText: '[use] Tests' }).getByRole('link'); // refactor for dynamic list name
-        this.newListTitle = page.getByText('Tests');
-        this.listDeleteButton = page.locator('div').filter({ hasText: '[use] Tests' }).getByRole('button'); // refactor for dynamic list name
-    }
+    constructor (private readonly page: Page) {}
 
     // Action Methods
-    async goToLoginPage() {
-        await this.adminLoginLink.click();
+    async goToPage(pageName:string) {
+        await this.navLink(pageName).click();
     }
     
-    async createNewList() {
-        await this.newListInputField.fill('Tests');
+    async createNewList(listTitle: string) {
+        await this.newListInputField.fill(listTitle);
         await this.page.keyboard.press('Enter');
     }
 
-    async openTodoList() {
-        await this.newListLink.click();
+    async openTodoList(listDescription: string) {
+        await this.newListLink(listDescription).click();
     }
 
     async confirmListDeletion(listTitle:string) {
@@ -45,8 +34,8 @@ export class HomePage {
     }
 
     // Assertion Methods
-    async assertNewListTitle() {
-        await expect(this.newListTitle).toBeVisible();
+    async assertNewListTitle(listTitle: string) {
+        await expect(this.newListTitle(listTitle)).toBeVisible();
     }
 }
 
